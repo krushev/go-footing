@@ -1,0 +1,27 @@
+app:
+  port: 3000
+  log: false
+  cors: true
+
+db:
+  host: localhost
+  port: 5432
+  user: footing
+  pass: footing
+  name: footing
+  debug: false
+
+email:
+  smtp:
+    host: mail.atechtrade.org
+    port: 465
+    user: krushev@atechtrade.org
+    pass: lOb&43gf0
+  from:
+    address: krushev@atechtrade.org
+    name: Stherapy
+
+jwt:
+  timeout: 15
+  maxRefresh: 45
+  loginUrl: http://localhost:3000/api/login
