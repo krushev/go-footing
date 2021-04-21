@@ -28,11 +28,6 @@ func NewConnection() Connection {
 	host := viper.GetString("db.host")
 	port := viper.GetInt("db.port")
 
-	var enableLogging = logger.Default.LogMode(logger.Info)
-	if !viper.GetBool("db_debug") && !viper.GetBool("db.debug") {
-		enableLogging.LogMode(logger.Silent)
-	}
-
 	dsn := url.URL{
 		User:     url.UserPassword(user, pass),
 		Scheme:   "postgres",
@@ -42,7 +37,7 @@ func NewConnection() Connection {
 	}
 
 	db, err := gorm.Open(postgres.Open(dsn.String()), &gorm.Config {
-		Logger: enableLogging,
+		Logger: logger.Default.LogMode(logMode()),
 	})
 
 	if err != nil {
@@ -50,4 +45,22 @@ func NewConnection() Connection {
 	}
 
 	return &connection{DB: db}
+}
+
+func logMode() logger.LogLevel {
+	dbLogLevel := viper.GetString("db_log")
+	if dbLogLevel == "" {
+		dbLogLevel = viper.GetString("db.log")
+	}
+	switch dbLogLevel {
+	case "silent":
+		return logger.Silent
+	case "error":
+		return logger.Error
+	case "warn":
+		return logger.Warn
+	case "info":
+		return logger.Info
+	}
+	return logger.Silent
 }

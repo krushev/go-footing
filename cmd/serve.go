@@ -29,7 +29,7 @@ func init() {
 	viper.SetDefault("db.user", "footing")
 	viper.SetDefault("db.pass", "footing")
 	viper.SetDefault("db.name", "footing")
-	viper.SetDefault("db.debug", false)
+	viper.SetDefault("db.log", "silent") // silent, error, warn, info
 
 	viper.SetDefault("jwt.timeout", 15)
 	viper.SetDefault("jwt.maxRefresh", 45)

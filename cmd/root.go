@@ -37,9 +37,9 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/." + name + ".yaml)")
-	RootCmd.PersistentFlags().Bool("db_debug", false, "log sql to console")
-	viper.BindPFlag("db_debug", RootCmd.PersistentFlags().Lookup("db_debug"))
+	RootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/." + name + ".yaml)")
+	RootCmd.PersistentFlags().String( "db_log", "", "sql log level (silent, error, warn, info)")
+	viper.BindPFlag("db_log", RootCmd.PersistentFlags().Lookup("db_log"))
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
