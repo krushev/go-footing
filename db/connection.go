@@ -28,9 +28,9 @@ func NewConnection() Connection {
 	host := viper.GetString("db.host")
 	port := viper.GetInt("db.port")
 
-	var enableLogging = logger.Default.LogMode(logger.Silent)
-	if viper.GetBool("db_debug") || viper.GetBool("db.debug") {
-		enableLogging = logger.Default
+	var enableLogging = logger.Default.LogMode(logger.Info)
+	if !viper.GetBool("db_debug") && !viper.GetBool("db.debug") {
+		enableLogging.LogMode(logger.Silent)
 	}
 
 	dsn := url.URL{
@@ -41,7 +41,7 @@ func NewConnection() Connection {
 		RawQuery: (&url.Values{"sslmode": []string{"disable"}}).Encode(),
 	}
 
-	db, err := gorm.Open(postgres.Open(dsn.String()), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(dsn.String()), &gorm.Config {
 		Logger: enableLogging,
 	})
 

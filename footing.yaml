@@ -9,7 +9,7 @@ db:
   user: footing
   pass: footing
   name: footing
-  debug: false
+  debug: true
 
 email:
   smtp:

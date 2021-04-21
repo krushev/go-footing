@@ -37,8 +37,9 @@ curl -X POST 'http://localhost:3000/api/login' -d '{"username": "admin@host.xyz"
 ```
 Access users
 ```bash
-curl -X GET 'http://localhost:3000/api/v0.0.1/users?token=PUT_RECIEVED_TOKEN'
-curl -X GET 'http://localhost:3000/api/v0.0.1/users/2?token=PUT_RECIEVED_TOKEN'
+curl -X GET 'http://localhost:3000/api/v0.0.1/users' -H "Authorization: Bearer PUT_RECEIVED_TOKEN"
+curl -X GET 'http://localhost:3000/api/v0.0.1/users/2' -H "Authorization: Bearer PUT_RECEIVED_TOKEN"
+curl -X GET 'http://localhost:3000/api/v0.0.1/users/search?q=user' -H "Authorization: Bearer PUT_RECEIVED_TOKEN"
 ```
 Refresh token
 ```bash

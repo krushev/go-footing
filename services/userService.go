@@ -11,8 +11,9 @@ import (
 )
 
 type UserService interface {
-	FindAll() (error, *[]models.User)
-	FindActive() (error, *[]models.User)
+	FindAll() (*[]models.User, error)
+	FindActive() (*[]models.User, error)
+	Search(q string, pagination *models.Pagination) (*[]models.User, error)
 	GetById(id string) (*models.User, error)
 	GetByEmail(email string) (*models.User, error)
 	Create(user models.User) (*models.User, error)
@@ -29,18 +30,31 @@ func NewUserService(conn db.Connection) *userService {
 	return &userService{db: conn.GetDB()}
 }
 
-func (us *userService) FindAll() (error, *[]models.User) {
+func (us *userService) FindAll() (*[]models.User, error) {
 	var users []models.User
 	result := us.db.Find(&users)
 
-	return result.Error, &users
+	return &users, result.Error
 }
 
-func (us *userService) FindActive() (error, *[]models.User) {
+func (us *userService) Search(q string, pagination *models.Pagination) (*[]models.User, error) {
+	var users []models.User
+	offset := (pagination.Page - 1) * pagination.Size
+	queryBuilder := us.db.Limit(pagination.Size).Offset(offset).Order(pagination.Sort)
+	result := queryBuilder.Model(&models.User{}).
+		Where("lower(name) LIKE lower(?)", "%" + q + "%").
+		Or("lower(email) LIKE lower(?)", "%" + q + "%").Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &users, nil
+}
+
+func (us *userService) FindActive() (*[]models.User, error) {
 	var users []models.User
 	result := us.db.Find(&users, models.User{Active: true})
 
-	return result.Error, &users
+	return &users, result.Error
 }
 
 func (us *userService) GetById(id string) (*models.User, error) {

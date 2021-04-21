@@ -13,3 +13,9 @@ type User struct {
 	Roles    pq.StringArray `validate:"required" gorm:"type:text[];not null;default:array['user']"`
 	Active   bool           `validate:"required" gorm:"not null;default:true"`
 }
+
+type Pagination struct {
+	Sort string `json:"sort"`
+	Page int    `json:"page"`
+	Size int    `json:"size"`
+}

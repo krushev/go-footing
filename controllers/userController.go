@@ -19,6 +19,7 @@ func NewUserController(us services.UserService) userController {
 func (uc *userController) Router() *fiber.App {
 	app := fiber.New()
 	app.Get("/", uc.findActive)
+	app.Get("/search", uc.search)
 	app.Get("/:id", uc.get)
 	app.Post("/", uc.create)
 	app.Put("/:id", uc.put)
@@ -47,7 +48,7 @@ func (uc *userController) create(ctx *fiber.Ctx) error {
 }
 
 func (uc *userController) findActive(ctx *fiber.Ctx) error {
-	err, users := uc.us.FindActive()
+	users, err := uc.us.FindActive()
 	if err != nil {
 		return ctx.
 			Status(http.StatusBadRequest).
@@ -55,11 +56,30 @@ func (uc *userController) findActive(ctx *fiber.Ctx) error {
 	}
 	return ctx.
 		Status(http.StatusOK).
-		JSON(users)
+		JSON(fiber.Map{
+			"data":  users,
+			"total": len(*users),
+		})
+}
+
+func (uc *userController) search(ctx *fiber.Ctx) error {
+	pagination := Pagination(ctx)
+	users, err := uc.us.Search(ctx.Query("q"), &pagination)
+	if err != nil {
+		return ctx.
+			Status(http.StatusBadRequest).
+			JSON(util.NewJError(err))
+	}
+	return ctx.
+		Status(http.StatusOK).
+		JSON(fiber.Map{
+			"data":  users,
+			"total": len(*users),
+		})
 }
 
 func (uc *userController) get(c *fiber.Ctx) error {
-	err, user := uc.us.GetById(c.Params("id"))
+	user, err := uc.us.GetById(c.Params("id"))
 	if err != nil {
 		return c.JSON(err)
 	}
