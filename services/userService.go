@@ -37,16 +37,27 @@ func (us *userService) FindAll() (*[]models.User, error) {
 	return &users, result.Error
 }
 
+// Search applies a filter and returns paginated array of matching results.
 func (us *userService) Search(q string, pagination *models.Pagination) (*[]models.User, error) {
 	var users []models.User
+
 	offset := (pagination.Page - 1) * pagination.Size
 	queryBuilder := us.db.Limit(pagination.Size).Offset(offset).Order(pagination.Sort)
+
 	result := queryBuilder.Model(&models.User{}).
 		Where("lower(name) LIKE lower(?)", "%" + q + "%").
 		Or("lower(email) LIKE lower(?)", "%" + q + "%").Find(&users)
+
 	if result.Error != nil {
 		return nil, result.Error
 	}
+
+	//var totalRows int64 = 0
+	//errCount := us.db.Model(&models.User{}).Count(&totalRows).Error
+	//if errCount != nil {
+	//	return nil, totalRows, errCount
+	//}
+
 	return &users, nil
 }
 
@@ -87,7 +98,7 @@ func (us *userService) Create(user models.User) (*models.User, error) {
 		return &user, util.ErrInvalidEmail
 	}
 
-	if !IsValid(user.Roles) {
+	if !IsValid(strings.Split(user.Roles, ",")) {
 		return &user, util.ErrInvalidRole
 	}
 

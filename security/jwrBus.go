@@ -10,6 +10,7 @@ import (
 	"go.uber.org/zap"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -47,7 +48,7 @@ func InitAuth(us services.UserService) *jwt.FiberJWTMiddleware {
 				"login": userId.(string),
 				"ID":    user.ID,
 				"name":  user.Name,
-				"roles": user.Roles,
+				"roles": strings.Split(user.Roles, ","),
 			}
 		},
 		IdentityHandler: func(ctx *fiber.Ctx) interface{} {

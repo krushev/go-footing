@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"net/url"
@@ -28,15 +29,21 @@ func NewConnection() Connection {
 	host := viper.GetString("db.host")
 	port := viper.GetInt("db.port")
 
-	dsn := url.URL{
-		User:     url.UserPassword(user, pass),
-		Scheme:   "postgres",
-		Host:     fmt.Sprintf("%s:%d", host, port),
-		Path:     name,
-		RawQuery: (&url.Values{"sslmode": []string{"disable"}}).Encode(),
+	var d gorm.Dialector
+	if viper.GetString("db.drv") == "sqlite" {
+		d = sqlite.Open(name)
+	} else {
+		dsn := url.URL{
+			User:     url.UserPassword(user, pass),
+			Scheme:   "postgres",
+			Host:     fmt.Sprintf("%s:%d", host, port),
+			Path:     name,
+			RawQuery: (&url.Values{"sslmode": []string{"disable"}}).Encode(),
+		}
+		d = postgres.Open(dsn.String())
 	}
 
-	db, err := gorm.Open(postgres.Open(dsn.String()), &gorm.Config {
+	db, err := gorm.Open(d, &gorm.Config {
 		Logger: logger.Default.LogMode(logMode()),
 	})
 

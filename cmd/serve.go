@@ -12,7 +12,7 @@ var serveCmd = &cobra.Command{
 	Short: "start http server with configured api",
 	Long:  `Starts a http server and serves the configured api`,
 	Run: func(cmd *cobra.Command, args []string) {
-		controllers.Router()
+		controllers.NewApp(false)
 	},
 }
 
@@ -24,6 +24,7 @@ func init() {
 	viper.SetDefault("app.log", true)
 	viper.SetDefault("app.cors", true)
 
+	viper.SetDefault("db.drv", "postgres")
 	viper.SetDefault("db.host", "localhost")
 	viper.SetDefault("db.port", "5432")
 	viper.SetDefault("db.user", "footing")

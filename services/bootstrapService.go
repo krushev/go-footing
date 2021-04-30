@@ -25,14 +25,14 @@ func (bs *bootstrapService) InitUsers() {
 		zap.S().Fatal(err)
 	}
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		admin := models.User{ Name: "Admin", Email: "admin@host.xyz", Password: "admin", Roles: []string{"admin"} }
+		admin := models.User{ Name: "Admin", Email: "admin@host.xyz", Password: "admin", Roles: "admin" }
 		_, err := bs.us.Create(admin)
 		if err != nil {
 			zap.S().Fatalf("Error during user (%s) initialisation", admin.Name)
 		}
 		zap.S().Infof("'%s' has been created successfully", admin.Name)
 
-		user := models.User{ Name: "User", Email: "user@host.xyz", Password: "user", Roles: []string{"user"} }
+		user := models.User{ Name: "User", Email: "user@host.xyz", Password: "user", Roles: "user" }
 		_, err = bs.us.Create(user)
 		if err != nil {
 			zap.S().Fatalf("Error during user (%s) initialisation", user.Name)

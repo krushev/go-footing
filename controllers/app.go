@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func Router() {
+func NewApp(debug bool) *fiber.App {
 	conn := db.NewConnection()
 	// Auto Migrate
 	conn.GetDB().AutoMigrate(&models.User{})
@@ -36,7 +36,10 @@ func Router() {
 	api.Post("/logout", jwtBus.LogoutHandler)
 	api.Post("/refresh", jwtBus.RefreshHandler)
 
-	api001.Use(jwtBus.MiddlewareFunc())
+	if !debug {
+		api001.Use(jwtBus.MiddlewareFunc())
+	}
+
 	api001.Mount("/users", uc.Router())
 
 	port := viper.GetString("app.port")
@@ -45,5 +48,10 @@ func Router() {
 	app.Get("/ping", func(ctx *fiber.Ctx) error {
 		return ctx.Send([]byte("pong"))
 	})
-	zap.S().Fatal(app.Listen(":" + port))
+
+	if !debug {
+		zap.S().Fatal(app.Listen(":" + port))
+	}
+
+	return app
 }
