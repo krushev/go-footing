@@ -1,6 +1,6 @@
 module github.com/krushev/go-footing
 
-go 1.15
+go 1.16
 
 require (
 	github.com/LdDl/fiber-jwt/v2 v2.17.0
