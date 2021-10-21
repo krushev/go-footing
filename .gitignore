@@ -14,6 +14,3 @@
 # Editor directories and files
 .idea
 .vscode
-
-# Goland http test requests
-*.http
